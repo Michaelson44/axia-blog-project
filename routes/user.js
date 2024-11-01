@@ -6,6 +6,6 @@ router.get("/api/user", getUsers);
 router.put("/api/user", verifyAndAuth, updateUser)
 router.put("/api/user", verifyAndAuth, updatePassword)
 router.put("/api/user-role", verifyAdmin, updateRole)
-router.delete("/api/delete-user", verifyAdmin, deleteUser)
+router.delete("/api/delete-user", verifyAndAuth, deleteUser)
 
 module.exports = router;

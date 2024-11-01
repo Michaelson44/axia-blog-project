@@ -19,7 +19,7 @@ const schema = new mongoose.Schema({
         type: [mongoose.Types.ObjectId],
         default: [],
         ref: "users"
-    },
+    }
 }, {timestamps: true});
 
 module.exports = mongoose.model("comments", schema);

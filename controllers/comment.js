@@ -64,4 +64,25 @@ const likeComment = async (req, res) => {
     }
 }
 
-module.exports = {makeComment, getComment, getSingleComment, likeComment};
+const deleteComment = async (req, res) => {
+    const {id} = req.params;
+    const userId = req.user.id;
+
+    try {
+        const comment = await Model.findById(id)
+        // validate comment
+        if (!comment) {
+            return res.status(404).json({success: false, error: "comment not found"})
+        }
+        // validate user
+        if (comment.commentorId !== userId) {
+            return res.status(321).json({success: false, error: "you are not authorized for that"})
+        }
+
+        await Model.findByIdAndDelete(id);
+        res.status(200).json({success: true, message: " comment has been deleted"});
+    } catch (err) {
+        res.stauts(500).json({success: false, err});
+    }
+}
+module.exports = {makeComment, getComment, getSingleComment, likeComment, deleteComment};

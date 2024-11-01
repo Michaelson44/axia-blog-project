@@ -13,10 +13,20 @@ const makePost = async (req, res) => {
 };
 
 const updatePost = async (req, res) => {
+    const {postId} = req.params;
     const {likes, ...others} = req.body;
-    const {id} = req.user;
+    const userId = req.user.id;
     try {
-        await Model.findByIdAndUpdate(id, {...others}, {new: true});
+        const post = await Model.findById(postId)
+        // validate post
+        if (!post) {
+            return res.status(404).json({success: false, error: "post not found"})
+        }
+        // validate user
+        if (post.creatorId !== userId) {
+            return res.status(321).json({success: false, error: "you are not authorized for that"})
+        }
+        await Model.findByIdAndUpdate(postId, {...others}, {new: true});
         res.status(200).json({success: true, message: "post has been updated successfully"});
     } catch (err) {
         res.status(500).json(err.message);
@@ -24,11 +34,20 @@ const updatePost = async (req, res) => {
 }
 
 const deletePost = async (req, res) => {
-    const {id} = req.user;
+    const {postId} = req.params;
+    const userId = req.user.id;
     try {
+        const post = await Model.findById(postId)
+        // validate post
+        if (!post) {
+            return res.status(404).json({success: false, error: "post not found"})
+        }
+        // validate user
+        if (post.creatorId !== userId) {
+            return res.status(321).json({success: false, error: "you are not authorized for that"})
+        }
         await Model.findByIdAndDelete(id);
-        res.clearCookie("token")
-            .status(200)
+        res.status(200)
             .json({success: true, message: "user has been deleted"});
     } catch (err) {
         res.status(500).json(err.message);
